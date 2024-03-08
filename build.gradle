@@ -1,0 +1,70 @@
+defaultTasks 'clean', 'test', 'aggregate'
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
+apply plugin: 'net.serenity-bdd.aggregator'
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "net.serenity-bdd:serenity-gradle-plugin:3.2.5"
+        classpath("net.serenity-bdd:serenity-single-page-report:3.2.5")
+    }
+}
+tasks.withType(JavaCompile){
+    options.encoding = 'UTF-8'
+}
+
+serenity {
+    reports = ["single-page-html"]
+}
+
+ext {
+    slf4jVersion = '1.7.7'
+    serenityCoreVersion = ''
+    serenityCucumberVersion = '3.3.4'
+    junitVersion = '4.13.2'
+    assertJVersion = '3.23.1'
+    logbackVersion = '1.4.1'
+}
+
+dependencies {
+    implementation 'io.appium:java-client:6.1.0'
+    implementation group: 'net.serenity-bdd', name: 'serenity-core', version: '3.4.3'
+    implementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: '3.9.4'
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay', version: '3.9.7'
+    implementation group: 'net.serenity-bdd', name: 'serenity-screenplay-webdriver', version: '3.9.7'
+    implementation group: 'net.serenity-bdd', name: 'serenity-ensure', version: '3.9.7'
+    testImplementation group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.9.3'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.9.3'
+    testImplementation group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '5.9.3'
+    testImplementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.4.2'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.1'
+}
+
+
+test {
+    testLogging.showStandardStreams = true
+    systemProperties System.getProperties()
+}
+
+gradle.startParameter.continueOnFailure = true
+
+test.finalizedBy(aggregate)
+
+
